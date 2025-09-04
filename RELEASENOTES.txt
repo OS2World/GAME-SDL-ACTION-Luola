@@ -1,0 +1,21 @@
+Release notes for Luola 1.3.2
+------------------------------
+
+Luola 1.3.2 introduces a new unified physics engine. Most of the game
+code (ships, weapons, critters, etc.) was rewritten.
+
+Luola 1.3.2 is still a very much work in progress. Rewriting the game code
+introduced many regressions in gameplay. Most notably, the pilot's ninjarope is
+currently practically unusable.
+
+Regressions to sort out:
+
+Object-object collisions don't work properly yet. Ship collisions are disabled
+until they are fixed. Also, acid and napalm currently don't stick to ships.
+
+Pilot's rope is now spring system based. The system is currently highly
+unstable and needs more work.
+
+Some sound effects are missing. This just means adding more playwave() and
+playwave_3d() calls. Also, some weapons could use a sound effect of their own,
+rather than the generic one.

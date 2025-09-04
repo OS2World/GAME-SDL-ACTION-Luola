@@ -1,0 +1,377 @@
+
+Table of contents
+
+ 1. Introduction
+ 2. Collision map
+ 2. Luola level configuration file 
+ 4. Luola compact level file
+ 5. Using foreign levels
+ 6. Level making tips
+
+1. Introduction
+--------------------------------------------------------------------------------
+
+A Luola level is made up of four parts:
+    1) The level artwork
+    2) The collisionmap image
+    3) Level settings file
+	4) Level thumbnail
+
+The level settings file is the file that luola searches for during startup.
+It must have ".lev" extension for Luola to recognize it. The settings file
+contains paths to artwork, collisionmap and the level thumbnail.
+
+These four parts can be seperate files, or all packed into a single one.
+
+The level artwork file can also be used as the collisionmap, provided that
+it is palette based and the colours are arranged properly. You can manually
+specify the meaning of each color, so it is possible to use levels from
+other caveflying games in Luola.
+
+The level artwork is the part of the level the player sees.
+The collisionmap specifies different terrain types such as free space, ground,
+water, bases, etc. The image used as a collision map has following limitations:
+  1) It must have exactly the same dimensions as the level artwork
+  2) It must have an indexed palette
+
+The thumbnail is displayed in the level selection screen. The only limitation
+is that its height must be exactly 120 pixels.
+
+2. Collision map
+--------------------------------------------------------------------------------
+
+By default, the collisionmap palette entries have the following meanings:
+
+Color 0  - None (free space)
+Color 1  - Destructable landscape
+Color 2  - Underwater destructable landscape
+Color 3  - Indestructable landscape
+Color 4  - Water
+Color 5  - Base
+Color 6  - Explosive
+Color 7  - Explosive2
+Color 8  - Water, flows upwards
+Color 9  - Water, flows to the right
+Color 10 - Water, flows downwards
+Color 11 - Water, flows to the left
+Color 12 - Combustable terrain
+Color 13 - Combustable terrain2
+Color 14 - Snow
+Color 15 - Ice
+Color 16 - Base material
+Color 17 - Tunnel
+Color 18 - Walkway
+
+Up to Luola 1.3.1, this reflected Luola's internal palette format. This
+palette order is retained for backwards compatability. Feel free to define
+your own palette when making levels.
+
+Terrain explanations:
+ 0. Free space
+	This is just empty space, you can fly thru it. Explosions don't affect
+	the level artwork in this area. See also Tunnel and Walkway
+
+ 1. Destructable landscape
+ 	The most often used terrain, regular destructable landscape. Explosions
+	will make holes in this that appear black in the level artwork
+
+ 3. Underwater destructable landscape
+ 	Otherwise the same as normal landscape, except it will turn into water
+	when destroyed. Artwork fill be filled with the colour of water
+
+ 4. Water
+ 	Like free space, except more dense. This color is used when creating
+	new water in the game, so it should be the same as in level artwork.
+
+ 5. Base
+ 	Ships will recharge when they touch this. Depeding on settings, bases
+	can be indestructable or they can regenerate.
+
+ 6. Explosive
+ 	When shot at or burned, this terrain will explode into normal bullets.
+	
+ 7. Explosive2
+ 	Like above, but will explode into grenades. Beware that even small areas
+	of this terrain will produce huge explosions!
+
+ 8-11. Waterflows
+ 	These water terrains will affect ships and bullets that travel thru them.
+	The current is so strong that the ship cannot fight it (except with Dart),
+	so be careful how you use it.
+
+ 12. Combustable terrain
+ 	This terrain will burn away. The fire is started by special firestarter
+	particles that are generated from large explosions.
+
+ 13. Combustable terrain 2
+ 	Like above, except will turn into grey ash. Using this in combination
+	with above, you can make houses that will leave ruins after burning.
+
+ 13. Snow
+    A bit like normal terrain, except it will chip away and you can burrow
+	into it a bit.
+
+ 14. Ice
+ 	Like snow, except underwater.
+ 	
+ 16. Base material
+ 	A special terrain type you can use to make support structures for bases.
+	Is indestructable if bases are.
+
+ 17. Tunnel
+ 	A type of free space where explosions affect the artwork. You can use
+	this to make thin tunnels that will clear the artwork when the surrounding
+	material is destroyed, so it wont leave funny looking trails hanging in
+	midair.
+
+ 18. Walkway
+ 	A type of destructable terrain that pilots can walk thru. You can use this
+	to make escape routes for pilots or trees that appear to be in the
+	background. (See the level making tips section)
+
+3. Luola level configuration file
+------------------------------------------------------------------------------
+
+The level configuration file is required for Luola to recognize its levels.
+The configuration file must have at least a [main] block.
+Values that must be set there are at least:
+ * collmap and/or artwork
+ * name
+
+Level configuration files must have the file extension .lev for Luola to
+recognize them.
+
+A line starting with '#' is a comment line.
+
+The file is divided into following blocks:
+[main]		- This block sets general things like the name of the level and filenames.
+[override]	- Level settings can be overridden here
+[object]	- A manually placed object
+[palette]	- Custom palette for luola 8 bit level format
+
+All unrecognized blocks are skipped.
+
+Main block
+----------
+
+collisionmap = *	- Collisionmap filename
+artwork = *			- Artwork filename
+thumbnail = *		- Thumbnail filename
+name = *			- Name of the level (appears in the level selection box)
+aspect = ?.?		- Aspect ratio
+zoom = ?.?			- Level zoom
+music = *.???		- Set to the name of the background music file for this
+					  level (multiple entries allowed)
+
+Override block
+--------------
+
+critters = 1/0				- Force critters to be enabled/disabled
+bases_indestructable = 1/0	- If set to 1, bases will be indestructable
+
+stars = 1/0					- Stars enabled/disabled
+snowfall = 1/0				- Snowfall enabled/disabled
+onewayjp = 1/0				- Are jump points one way only
+--The rest are numbers of automatically placed objects--
+turrets = ?
+jumpgates = ?				- Note: this is the number of jumpgate _pairs_
+cows = ?
+fish = ?
+birds = ?
+bats = ?
+
+Object block
+-------------
+An object block defines a single object. You can have multiple object blocks.
+
+type = {turret,jumpgate,cow,fish,bird,bat,ship}	- Type of the object
+x = ?											- X and Y coordinates.
+y = ?
+value = ?										- A special value of the object.
+						  When used by a turret: 0=normal,1=grenade,2=missile
+						  When used by a bat: 0=awake, 1=asleep
+						  When used by a ship: 0 gray, 1-4 coloured
+id = ?						- A temporary ID for the object. Used only by jumpgates.
+link = ?					- ID of the objects link. Used only by jumpgates.
+
+The id and link values are used by jumpgates to find their pairs.
+Both jumpgates must have their ids and links set up accordingly.
+The id can be any number, it is used only while searching for the jumpgates pair.
+
+Note about the coordinates.
+For most objects, x and y mark the center of the object. For land critters,
+y is the lower border.
+If level is scaled, the coordinates are automatically scaled as well.
+
+Palette block
+-------------
+
+In this block, you can create a custom palette for the level.
+If no palette is specified, the default palette as specified
+in the beginning of this document is used. Any terrain types
+not defined here will be disabled. Colours that are not mapped
+anywhere will be mapped to the default terrain. (Default is 0
+if not set here)
+
+<colour range> = <type>
+
+Colour range can be a single number (eg. 0) or a range (eg. 0-10).
+Type can be one of following:
+free,ground,underwater,indestructable,water,base,explosive,explosive2,
+waterup,waterright,waterdown,waterleft,combustable,combustable2,snow,
+ice,basemat,tunnel,walkway.
+
+Example:
+0-10 = free
+11-20 = ground
+21 = base
+
+4. Luola compact level file
+------------------------------------------------------------------------------
+
+The compact level format uses the luola datafile format to store levels.
+Like normal levels, compact level filenames must end in ".lev"
+Files are stored under the following IDs:
+
+"ARTWORK"	The level artwork file
+"COLLISION"	The level collisionmap file
+"THUMBNAIL"	The level thumbnail file
+"CONFIG"	Level settings file
+"SOURCE"	Level settings file. Deprecated, use CONFIG instead.
+
+The settings file must always be present.
+Should the artwork entry be excluded, the artwork is loaded from
+the collisionmap. Note that the collisionmap must be present!
+
+Multiple levels can be stored in a single compact level file, by using
+a different index for each level.
+
+To create compact level files, use the bundled ldat tool.
+An example .pack file for ldat that stores two levels in a single archive:
+ldat: mylevel.lev
+0       ARTWORK         mylevel.png
+0       COLLISION       mylevelcmap.png
+0       CONFIG          mylevelconf.lev
+0       THUMBNAIL       mylevel.thumb.png
+1       ARTWORK         mysecondlevel.png
+1       COLLISION       mysecondlevelcmap.png
+1       CONFIG          mysecondlevelconf.lev
+1       THUMBNAIL       mysecondlevel.thumb.png
+
+You can also extract levels with the ldat tool.
+Eg.
+ldat -x twilight.compact.lev ARTWORK
+will extract the level artwork from Twilight Zone level.
+Note that since LDATs don't retain original filenames, the file will be
+named "ARTWORK". Extract the CONFIG file to see the original filenames.
+Collisionmaps might be in LCMAP format. You can use the provided lcmap tool
+to convert it into a BMP.
+
+5. Using foreign levels
+------------------------------------------------------------------------------
+
+Luola allows you to define the meaning of each colour in collisionmap palette
+so you can use custom level formats. This makes it possible to use levels
+from other caveflying games in Luola.
+
+To use a foreign level you must:
+ 1. Convert the level to a standard image format
+ 2. Write a configuration file for it
+
+The first step might be a bit difficult as the levels are usually in an
+undocumented format, so a bit reverse engineering is required.
+Luckily, a tool is provided with Luola to make importing levels easier.
+
+The "importlev" program in tools/ subdirectory is a tool for importing
+levels from many different formats. Currently V-Wing, Wings and TOU levels
+are supported, but writing new importer modules is very easy.
+
+Usage:
+
+	importlev level1.lev
+	This imports a level named level1.lev
+
+	importlev --compact level1.lev
+	This imports the level and generates a compact level file.
+	You can extract the images from the level file with the ldat
+	tool if you wish.
+
+
+6. Level making tips
+------------------------------------------------------------------------------
+
+Dithered colourslides
+---------------------
+
+In my levels, large areas with a colour slide (like ground or large buildings)
+are often dithered. This gives a nice retroish effect that looks pretty
+good in Luola.
+
+First create the area and fill it with the colourslide.
+You can then use the airbrush tool of your image editor and make the gradient
+seem a bit more random and natural.
+Now use the selection tools to select the area which you wish to dither.
+If you are using gimp, you can use the dither filter (Filters->Noise->Ditherize)
+to do the actual ditherization. (Gimp perl extension is required)
+If a dither tool is not available, then copy the selection to clipboard,
+paste it on a new image and convert that image to 8bit format.
+Then copy the new now ditherized image (assuming dithering was turned on)
+to clipboard and paste it back to your level.
+
+Stars in caves
+--------------
+
+Luola has the feature to display stationary stars behind the level.
+Here is a neat trick to make the stars invisible in some areas,
+it is useful for example in underground caverns.
+It is a subtle effect, but a nice one.
+
+To do it, simply fill the area where you don't want stars to appear
+with an _almost_ black colour.
+Luola draws the star if the pixel underneath is of type TER_FREE and its
+red,green and blue values are smaller than 5.
+So, you could fill the area with for example 0x050505
+
+Base material
+-------------
+
+Luola has a special terrain type called 'Base material'.
+This terrain behaves either as normal destructable terrain or
+indestructable terrain depending on whether or not the 'Bases
+are destructable' option is set. You can use it to create the
+terrain supporting a base. For example, say you have a gas station
+floating in space. On the station, there is a base. If bases are
+destructable, it is no problem if someone comes up and blasts the
+thing to oblivion. However, if bases are indestructable, you have a
+floating grey strip hanging in midair. Looks rather silly doesn't it?
+This is where base material comes in. Make the important parts of the
+gas station out of it and the problem is solved!
+
+Explosive terrain
+-----------------
+
+Luola has two explosive terraintypes.
+The difference between the two is that TER_EXPLOSIVE2 explodes into grenades
+while TER_EXPLOSIVE explodes into normal bullets. Even very small areas of
+explosive2 can create a huge explosion so use it with care! Then there is also
+the problem that luola has 4 different sizes for the hole created by an explosion.
+The smaller the hole, the bigger the explosion of course (more bullets are
+created). So you should use only small areas of explosive terrain, and try to
+arrange the explosives so that they work well with all holesizes.
+
+Trees
+-----
+
+Trees are nice.
+Typically when creating a tree, you use two different terraintypes.
+Normal burning terrain for the leaves and terrain that burns into ash for
+the trunk and branches.
+How about when there are critters in the levels ?
+If the tree is small, it looks silly if a cow walks straight over it.
+Here is a simple trick that allows ground critters (and pilots)
+to walk through the trees making it look as if they are walking in front
+of them. In the collisionmap, create a thin line (1 pixel in height)
+of Walkway terrain that cuts the tree right next to the ground.
+Ground critters can then walk thru this line. Walkway turns gray when
+it is burned, so it is completely invisible to the player.
+
