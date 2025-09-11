@@ -26,6 +26,9 @@
 #include <string.h>
 #include <limits.h>
 #include <stdio.h>
+#ifdef __OS2__
+#include <sys\syslimits.h>
+#endif
 
 #include "SDL.h"
 

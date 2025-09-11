@@ -28,6 +28,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <errno.h>
+#ifdef __OS2__
+#include <sys\syslimits.h>
+#endif
 
 #include "SDL.h"
 #include "SDL_image.h"

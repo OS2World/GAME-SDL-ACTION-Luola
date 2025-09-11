@@ -25,6 +25,9 @@
 #include <limits.h>
 #include <stdio.h>
 #include <ctype.h>
+#ifdef __OS2__
+#include <sys\syslimits.h>
+#endif
 
 #include "im_vwing.h"
 

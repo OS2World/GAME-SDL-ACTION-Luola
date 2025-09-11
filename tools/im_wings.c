@@ -26,6 +26,9 @@
 #include <limits.h>
 #include <stdio.h>
 #include <ctype.h>
+#ifdef __OS2__
+#include <sys\syslimits.h>
+#endif
 
 #include <SDL.h>
 #include <SDL_rwops.h>
